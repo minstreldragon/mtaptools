@@ -1,4 +1,4 @@
-README.TXT for mtap 0.15 (14. November 1998)
+README.TXT for mtap 0.16 (02. May 1999)
 
 mtap is Copyright (C) 1998 Markus Brenner <markus@brenner.de>
 homepage: http://arnold.c64.org/~minstrel/
@@ -55,9 +55,12 @@ homepage: http://arnold.c64.org/~minstrel/
          Removed bug which saved huge files when in fact no pulse was recorded.
    0.15  Added a Borderflasher during tape reading. (thanks Richard Storer!)
          fixed first pulse after longpulses
+   0.16  Choice of LPT port
+         delay play key
 
    to do:
-         - support other port choices than LPT1
+         - optional starting and stopping with 'esc' key
+         - tape adjustment tool
 
 ========================================
 = Links and additional Information     =
@@ -69,24 +72,23 @@ homepage: http://arnold.c64.org/~minstrel/
 
 
    - H†kan Sundell's .TAP specification (news article from comp.emulators.cbm)
-
      http://www.dejanews.com/getdoc.xp?AN=372073838
 
 
    - Circuit-diagram and order form for C64S adapter
-
      http://www.phs-edv.de/c64s/doc/lpt64.htm
      http://www.phs-edv.de/mailbox/order.htm
 
 
    - CCS64 homepage
-
      http://www.fatal-design.com/ccs64/
 
 
    - Tomaz Kac's excellent C64 emulation utilites (voc2tap etc.)
-
      http://warez.sd.uni-mb.si/zx/Utilities/64utils.zip
+
+   - Richard Storer's Tapload, another TAP generation tool
+     http://members.tripod.com/rstorer/c64
 
 
 
@@ -98,3 +100,4 @@ homepage: http://arnold.c64.org/~minstrel/
    - Martin Pugh          <martin@pugh.prestel.co.uk>
    - Richard Storer       <rstorer@cyberspace.org>
    - H†kan Sundell        <Hakan.Sundell@xpress.se>
+   - Nicolas Welte        <welte@chemie.uni-konstanz.de>

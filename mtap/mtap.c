@@ -15,10 +15,13 @@
 //                 always sets .TAP extension
 //        V 0.15   Borderflasher added
 //                 short pulse after longpulse added to longpulse
+//        V 0.16   Choice of LPT port
+//                 delay play key
 //   
 //        to do:
-//                  choice of LPT port
-//                  alternative technique of converting (R. Storer)
+//                 alternative technique of converting (R. Storer)
+//                 optional starting and stopping with 'esc' key
+//                 tape adjustment tool
 
 
 #include <stdlib.h>
@@ -29,9 +32,10 @@
 #include <crt0.h>
 
 
-#define VERSION 0.15
+#define VERSION 0.16
 
 #define LPT1 0x378 + 1
+#define LPT2 0x278 + 1
 // DAC Color Mask register, default: 0xff. palette_color = PELMASK & color_reg
 #define PELMASK 0x03c6
 #define read_pin  0x40
@@ -46,7 +50,7 @@ int _crt0_startup_flags = _CRT0_FLAG_LOCK_MEMORY;
 
 void usage(void)
 {
-	fprintf(stderr, "usage: mtap [tap output file]\n");
+	fprintf(stderr, "usage: mtap [-lpt2] [tap output file]\n");
 	exit(1);
 }
 
@@ -114,13 +118,29 @@ void main(int argc, char **argv)
 	int waitflag;
 	int overflow;
 	int flash=0;  // border color
+	int port;
 
 	printf("\nmtap - Commodore TAP file Generator v%.2f\n\n", VERSION);
 
-	if (argc < 2)
-		usage();
+	port = LPT1;
+	while (--argc && (*(++argv)[0] == '-'))
+	{
+		switch ((*argv)[1])
+		{
+			case 'l':
+			case 'L':
+				if ((*argv)[4] == '1') port = LPT1;
+				else if ((*argv)[4] == '2') port = LPT2;
+				else usage();
+				break;
+			default:
+				break;
+		}
+	}
 
-	strcpy(outname, argv[1]);
+	if (argc < 1) usage();
+
+	strcpy(outname, argv[0]);
 	SetFileExtension(outname, ".TAP");
 	
 	if ((fpout = fopen(outname,"wb")) == NULL)
@@ -137,14 +157,16 @@ void main(int argc, char **argv)
 
 
 	init_border_colors();
-	if (!(inp(LPT1) & sense_pin))
+	if (!(inp(port) & sense_pin))
 		printf("Please <STOP> the tape.\n");
-	while (!(inp(LPT1) & sense_pin));
+	while (!(inp(port) & sense_pin));
 
 	printf("Press <PLAY> on tape!\n");
-	while (inp(LPT1) & sense_pin);
+	while (inp(port) & sense_pin);
 
 	printf("Tape now running, recording...\n");
+
+	delay(500);	/* delay for a second, so signal settles */
 
 	bufferp = buffer;
 
@@ -158,7 +180,7 @@ void main(int argc, char **argv)
 
 	do
 	{
-		while (!(inp(LPT1) & (read_pin | sense_pin)))
+		while (!(inp(port) & (read_pin | sense_pin)))
 		{
 			outp(0x43,0x00);	// latch counter 0 output
 			inp(0x40);		// read CTC channel 0
@@ -176,7 +198,7 @@ void main(int argc, char **argv)
 			else waitflag = 1;
 		}
 
-		while ((inp(LPT1) & (read_pin | sense_pin)) == read_pin)
+		while ((inp(port) & (read_pin | sense_pin)) == read_pin)
 		{
 			outp(0x43,0x00);	// latch counter 0 output
 			inp(0x40);		// read CTC channel 0
@@ -201,7 +223,7 @@ void main(int argc, char **argv)
 		overflow = *bufferp++;
 		waitflag = 0;
 		outp(PELMASK, (flash++ << 4) | 0x0f);
-	} while (!(inp(LPT1) & sense_pin));
+	} while (!(inp(port) & sense_pin));
 	
 	set_border_black();
 	outp(PELMASK, 0xff);
