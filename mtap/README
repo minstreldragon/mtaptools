@@ -1,6 +1,7 @@
-README.TXT for mtap 0.14 (September 21 1998)
+README.TXT for mtap 0.15 (14. November 1998)
 
 mtap is Copyright (C) 1998 Markus Brenner <markus@brenner.de>
+homepage: http://arnold.c64.org/~minstrel/
 
 
 ========================================
@@ -41,24 +42,31 @@ mtap is Copyright (C) 1998 Markus Brenner <markus@brenner.de>
 = History                              =
 ========================================
 
-   0.10 First version to recorded a working .TAP
-   0.12 .TAP header corrections:
-        - fill 'future use' field with: 00 00 00 00
-        - set filelength entry to correct data length value
-        - honor <STOP> event on datassette
-   0.13 Improved use of '00' bytes - one 00 byte represents 2550 ticks
-   0.14 Again improved '00' bytes timing.
-        '00' now represents 1/50 s, this is 2463 ticks
-        Print program name and version at startup.
-        Set output name extension to "TAP".
-	Removed bug which saved huge files when in fact no pulse was recorded.
+   0.10  First version to recorded a working .TAP
+   0.12  .TAP header corrections:
+         - fill 'future use' field with: 00 00 00 00
+         - set filelength entry to correct data length value
+         - honor <STOP> event on datassette
+   0.13  Improved use of '00' bytes - one 00 byte represents 2550 ticks
+   0.14  Again improved '00' bytes timing.
+         '00' now represents 1/50 s, this is 2463 ticks
+         Print program name and version at startup.
+         Set output name extension to "TAP".
+         Removed bug which saved huge files when in fact no pulse was recorded.
+   0.15  Added a Borderflasher during tape reading. (thanks Richard Storer!)
+         fixed first pulse after longpulses
 
    to do:
-	- support other port choices than LPT1
+         - support other port choices than LPT1
 
 ========================================
 = Links and additional Information     =
 ========================================
+
+  The latest version of this program is available on
+  http://arnold.ml.org/~minstrel/
+
+
 
    - H†kan Sundell's .TAP specification (news article from comp.emulators.cbm)
 

@@ -13,6 +13,8 @@
 //                 now converts V and Boulder Dash CS correctly
 //                 prints program name and version number
 //                 always sets .TAP extension
+//        V 0.15   Borderflasher added
+//                 short pulse after longpulse added to longpulse
 //   
 //        to do:
 //                  choice of LPT port
@@ -27,9 +29,11 @@
 #include <crt0.h>
 
 
-#define VERSION 0.14
+#define VERSION 0.15
 
 #define LPT1 0x378 + 1
+// DAC Color Mask register, default: 0xff. palette_color = PELMASK & color_reg
+#define PELMASK 0x03c6
 #define read_pin  0x40
 #define sense_pin 0x20
 #define BUFFERSIZE 0x400000	// set buffer to 4 Megabyte
@@ -57,6 +61,44 @@ void SetFileExtension(char *str, char *ext)
 	strcat(str, ext);
 }
 
+// Init border colors for borderflasher
+void init_border_colors()
+{
+	union REGS r;
+	int color;
+
+	// colour table according to PC64
+
+	int red[]   = {0x00,0x3f,0x2e,0x00,0x25,0x09,0x01,0x3f,0x26,0x14,0x3f,0x12,0x1c,0x17,0x15,0x2b};
+	int green[] = {0x00,0x3f,0x00,0x30,0x00,0x33,0x04,0x3f,0x15,0x08,0x14,0x12,0x1c,0x3f,0x1c,0x2b};
+	int blue[]  = {0x00,0x3f,0x05,0x2b,0x26,0x00,0x2c,0x00,0x00,0x05,0x1e,0x12,0x1c,0x15,0x3a,0x2b};
+
+	for (color = 1; color < 16; color++)
+	{
+		r.h.ah = 0x10;       // set palette registers function in Video BIOS
+	 	r.h.al = 0x10;       // set individual DAC colour register
+		r.w.bx = color * 16; // set border color entry
+		r.h.dh = red[color];
+		r.h.ch = green[color];
+		r.h.cl = blue[color];
+		int86(0x10, &r, &r);
+	}
+
+	r.h.ah = 0x10;     // set palette registers function in Video BIOS
+	r.h.al = 0x01;     // set border (overscan) DAC colour register
+	r.h.bh = 0xf0;     // set border color entry
+	int86(0x10, &r, &r);
+}
+
+// Reset border color to black
+void set_border_black()
+{
+	union REGS r;
+	r.h.ah = 0x10;     // set palette registers function in Video BIOS
+	r.h.al = 0x01;     // set border (overscan) DAC colour register
+	r.h.bh = 0x00;     // set border color entry
+	int86(0x10, &r, &r);
+}
 
 void main(int argc, char **argv)
 {
@@ -71,6 +113,7 @@ void main(int argc, char **argv)
 	int i;
 	int waitflag;
 	int overflow;
+	int flash=0;  // border color
 
 	printf("\nmtap - Commodore TAP file Generator v%.2f\n\n", VERSION);
 
@@ -93,6 +136,7 @@ void main(int argc, char **argv)
 	}
 
 
+	init_border_colors();
 	if (!(inp(LPT1) & sense_pin))
 		printf("Please <STOP> the tape.\n");
 	while (!(inp(LPT1) & sense_pin));
@@ -126,6 +170,7 @@ void main(int argc, char **argv)
 					*bufferp++ = 0xff;
 					*bufferp++ = overflow;
 					waitflag = 0;
+					outp(PELMASK, (flash++ << 4) | 0x0f);
 				}
 			}
 			else waitflag = 1;
@@ -143,6 +188,7 @@ void main(int argc, char **argv)
 					*bufferp++ = 0xff;
 					*bufferp++ = overflow;
 					waitflag = 0;
+					outp(PELMASK, (flash++ << 4) | 0x0f);
 				}
 			}
 			else waitflag = 1;
@@ -154,8 +200,11 @@ void main(int argc, char **argv)
 		*bufferp = inp(0x40);
 		overflow = *bufferp++;
 		waitflag = 0;
+		outp(PELMASK, (flash++ << 4) | 0x0f);
 	} while (!(inp(LPT1) & sense_pin));
-
+	
+	set_border_black();
+	outp(PELMASK, 0xff);
 	enable();
 
 	// first pulselen is second value, discard <STOP> pulse
@@ -191,11 +240,16 @@ void main(int argc, char **argv)
 		{
 			if (longpulse) 
 			{
+				// output long pulse and add last short pulse
+				longpulse += deltat;
 				for (zerot = longpulse; zerot > 0; zerot -= ZERO)
 					fputc(0, fpout);
 				longpulse = 0;
 			}
-			fputc((deltat & 0xff), fpout);
+			else
+			{
+				fputc((deltat & 0xff), fpout);
+			}
 		}
 		else
 			longpulse += deltat;
