@@ -1,0 +1,92 @@
+README.TXT for mtap 0.14 (September 21 1998)
+
+mtap is Copyright (C) 1998 Markus Brenner <markus@brenner.de>
+
+
+========================================
+= Introduction                         =
+========================================
+
+   mtap produces .TAP files from Commodore 64 tapes for use with true tape
+   emulation on the CCS64 emulator. (Should also work for VIC-20's and older
+   Commodore machines' tapes - though no emulator supports those TAPs yet :)
+
+   ************************************************************
+   ***  WARNING: NEVER RUN THIS PROGRAM UNDER WINDOWS !!!   ***
+   ************************************************************
+
+   REQUIREMENTS:
+
+   - Commodore Datassette recorder or 100% compatible
+   - C64S X1541/tape interface adapter or compatible (see links for information
+     where to order this)
+   - +5 V power supply to adapter (may be obtained from joystick port,
+     ideally use a C64's tape interface to obtain the correct voltage)
+   - Microsoft DOS and cwsdpmi.exe software
+
+
+========================================
+= Usage                                =
+========================================
+
+   From DOS simply type:
+
+   mtap tapname.tap
+
+   The program will record all pulses between pressing <PLAY> on tape
+   and <STOP>ping it.
+
+
+========================================
+= History                              =
+========================================
+
+   0.10 First version to recorded a working .TAP
+   0.12 .TAP header corrections:
+        - fill 'future use' field with: 00 00 00 00
+        - set filelength entry to correct data length value
+        - honor <STOP> event on datassette
+   0.13 Improved use of '00' bytes - one 00 byte represents 2550 ticks
+   0.14 Again improved '00' bytes timing.
+        '00' now represents 1/50 s, this is 2463 ticks
+        Print program name and version at startup.
+        Set output name extension to "TAP".
+	Removed bug which saved huge files when in fact no pulse was recorded.
+
+   to do:
+	- support other port choices than LPT1
+
+========================================
+= Links and additional Information     =
+========================================
+
+   - H†kan Sundell's .TAP specification (news article from comp.emulators.cbm)
+
+     http://www.dejanews.com/getdoc.xp?AN=372073838
+
+
+   - Circuit-diagram and order form for C64S adapter
+
+     http://www.phs-edv.de/c64s/doc/lpt64.htm
+     http://www.phs-edv.de/mailbox/order.htm
+
+
+   - CCS64 homepage
+
+     http://www.fatal-design.com/ccs64/
+
+
+   - Tomaz Kac's excellent C64 emulation utilites (voc2tap etc.)
+
+     http://warez.sd.uni-mb.si/zx/Utilities/64utils.zip
+
+
+
+   "Thank you!" to all people who helped me out with information:
+
+   - Ben Castricum        <B.Castricum@bns.getronics.nl>
+   - Martin van der Heide <mheide@bns.getronics.nl>
+   - Tomaz Kac            <tomaz.kac@uni-mb.si>
+   - Martin Pugh          <martin@pugh.prestel.co.uk>
+   - Richard Storer       <rstorer@cyberspace.org>
+   - H†kan Sundell        <Hakan.Sundell@xpress.se>
