@@ -17,6 +17,8 @@
 //                 short pulse after longpulse added to longpulse
 //        V 0.16   Choice of LPT port
 //                 delay play key
+//        V 0.17   according to Andreas Boose set 'ZERO' to 2500
+//                 buffersize can be set by command line
 //   
 //        to do:
 //                 alternative technique of converting (R. Storer)
@@ -32,7 +34,7 @@
 #include <crt0.h>
 
 
-#define VERSION 0.16
+#define VERSION 0.17
 
 #define LPT1 0x378 + 1
 #define LPT2 0x278 + 1
@@ -43,14 +45,15 @@
 #define BUFFERSIZE 0x400000	// set buffer to 4 Megabyte
 #define BASEFREQ 1193182
 #define SCALE 1.0
-#define ZERO 2463		// 1/50 s
+#define ZERO 2500		// approx. 1/50 s
 
 int _crt0_startup_flags = _CRT0_FLAG_LOCK_MEMORY;
+unsigned long int buffersize = BUFFERSIZE;
 
 
 void usage(void)
 {
-	fprintf(stderr, "usage: mtap [-lpt2] [tap output file]\n");
+	fprintf(stderr, "usage: mtap [-lpt2] [-buffer size] [tap output file]\n");
 	exit(1);
 }
 
@@ -127,6 +130,17 @@ void main(int argc, char **argv)
 	{
 		switch ((*argv)[1])
 		{
+			case 'b':
+			case 'B':
+				buffersize = atoi(*(++argv));
+				argc--;
+				if (buffersize < 1 || buffersize > 128)
+				{
+					fprintf(stderr, "Illegal Buffersize spezified!\n");
+					exit(3);
+				}
+				buffersize *= 0x100000;
+				break;
 			case 'l':
 			case 'L':
 				if ((*argv)[4] == '1') port = LPT1;
@@ -149,7 +163,7 @@ void main(int argc, char **argv)
 		exit(2);
 	}
 
-	if ((buffer = calloc(BUFFERSIZE, sizeof(char))) == NULL)
+	if ((buffer = calloc(buffersize, sizeof(char))) == NULL)
 	{
 		fprintf(stderr, "Couldn't allocate buffer memory!\n");
 		exit(3);

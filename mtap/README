@@ -1,4 +1,4 @@
-README.TXT for mtap 0.16 (02. May 1999)
+README.TXT for mtap 0.17 (07. June 1999)
 
 mtap is Copyright (C) 1998 Markus Brenner <markus@brenner.de>
 homepage: http://arnold.c64.org/~minstrel/
@@ -57,6 +57,8 @@ homepage: http://arnold.c64.org/~minstrel/
          fixed first pulse after longpulses
    0.16  Choice of LPT port
          delay play key
+   0.17  According to Andreas Boose fixed 'ZERO' to 2500 ticks.
+         Added a command line switch to increase buffer size.
 
    to do:
          - optional starting and stopping with 'esc' key
@@ -94,6 +96,7 @@ homepage: http://arnold.c64.org/~minstrel/
 
    "Thank you!" to all people who helped me out with information:
 
+   - Andreas Boose        <boose@linux.rz.fh-hannover.de>
    - Ben Castricum        <B.Castricum@bns.getronics.nl>
    - Martin van der Heide <mheide@bns.getronics.nl>
    - Tomaz Kac            <tomaz.kac@uni-mb.si>
